@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_DATABASE=app
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - data_mysql:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword" ]
+
+  mysql-migrate:
+    image: migrate/migrate
+    entrypoint:
+      - migrate
+      - -database
+      - mysql://root:password@tcp(mysql:3306)/app
+      - -path
+      - /schema
+      - up
+    volumes:
+      - ./migrations/mysql/app:/schema
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql-seed:
+    image: imega/mysql-client
+    command: sh -c "mysql --host=mysql --user=root --password=password --database=app < /seed/seed.sql;"
+    volumes:
+      - ./scripts/mysql:/seed
+    depends_on:
+      mysql-migrate:
+        condition: service_completed_successfully
+
+volumes:
+  data_mysql:
+    driver: local
