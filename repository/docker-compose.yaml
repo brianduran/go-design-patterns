@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   mysql:
-    image: mysql
+    image: mysql:5.7
     environment:
       - MYSQL_DATABASE=app
       - MYSQL_ROOT_PASSWORD=password
