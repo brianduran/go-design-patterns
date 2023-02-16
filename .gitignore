@@ -1,0 +1,4 @@
+test_coverage_report.html
+tools.coverprofile
+*.coverprofile_part
+*.parquet

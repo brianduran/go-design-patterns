@@ -11,7 +11,10 @@ import (
 )
 
 var (
-	//go:embed sql/mysql_repo_insert_user_stmt.sql
+	//go:embed sql/mysql_repo_delete_user_by_id.sql
+	deleteUserStmt string
+
+	//go:embed sql/mysql_repo_insert_user.sql
 	insertUserStmt string
 
 	//go:embed sql/mysql_repo_select_user_by_id.sql
@@ -21,10 +24,12 @@ var (
 	updateUserStmt string
 )
 
+// MysqlRepository contains the methods to handle a user stored in a MySQL database.
 type MysqlRepository struct {
 	db *sql.DB
 }
 
+// NewMysqlRepository creates a new NewMysqlRepository.
 func NewMysqlRepository() (*MysqlRepository, error) {
 	db, err := mysql.Open(conf.mysqlDB)
 	if err != nil {
@@ -36,11 +41,19 @@ func NewMysqlRepository() (*MysqlRepository, error) {
 	}, nil
 }
 
+// CreateUser executes the SQL statement to create a user.
 func (mr *MysqlRepository) CreateUser(ctx context.Context, name string, age int) error {
 	_, err := mr.db.ExecContext(ctx, insertUserStmt, name, age)
 	return err
 }
 
+// DeleteUser executes the SQL statement to delete a user.
+func (mr *MysqlRepository) DeleteUser(ctx context.Context, id int) error {
+	_, err := mr.db.ExecContext(ctx, deleteUserStmt, id)
+	return err
+}
+
+// GetUser executes the SQL statement to retrieve a user's data.
 func (mr *MysqlRepository) GetUser(ctx context.Context, id int) (*User, error) {
 	row, err := mr.db.QueryContext(ctx, selectUserStmt, id)
 	if err != nil {
@@ -58,6 +71,7 @@ func (mr *MysqlRepository) GetUser(ctx context.Context, id int) (*User, error) {
 	return user, nil
 }
 
+// UpdateUser executes the SQL statement to update a user.
 func (mr *MysqlRepository) UpdateUser(
 	ctx context.Context,
 	id int,
@@ -66,8 +80,4 @@ func (mr *MysqlRepository) UpdateUser(
 	attributes = append(attributes, id)
 	_, err := mr.db.ExecContext(ctx, updateUserStmt, attributes...)
 	return err
-}
-
-func (*MysqlRepository) DeleteUser(id int) error {
-	return nil
 }

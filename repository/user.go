@@ -6,6 +6,7 @@ import (
 	"github.com/ltvco/data-eng-go-lib/sqlutil"
 )
 
+// User contains the relevant data to handle an user.
 type User struct {
 	Age  int
 	Name string
