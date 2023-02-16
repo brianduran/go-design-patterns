@@ -11,7 +11,7 @@ type User struct {
 	Name string
 }
 
-// Scan maps the SQL results into the particular tiktokUserToAdd object.
-func (U *User) Scan(rows *sql.Rows) error {
-	return sqlutil.Scan(rows, U)
+// Scan maps the SQL results into the particular User object.
+func (u *User) Scan(rows *sql.Rows) error {
+	return sqlutil.Scan(rows, u)
 }
