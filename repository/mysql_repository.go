@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strings"
 
 	"github.com/ltvco/go_design_patterns/dbconn/mysql"
 
@@ -30,8 +32,8 @@ type MysqlRepository struct {
 }
 
 // NewMysqlRepository creates a new NewMysqlRepository.
-func NewMysqlRepository() (*MysqlRepository, error) {
-	db, err := mysql.Open(conf.mysqlDB)
+func NewMysqlRepository(config mysql.Config) (*MysqlRepository, error) {
+	db, err := mysql.Open(config)
 	if err != nil {
 		return nil, err
 	}
@@ -75,9 +77,18 @@ func (mr *MysqlRepository) GetUser(ctx context.Context, id int) (*User, error) {
 func (mr *MysqlRepository) UpdateUser(
 	ctx context.Context,
 	id int,
-	attributes []interface{},
+	attributes map[string]interface{},
 ) error {
-	attributes = append(attributes, id)
-	_, err := mr.db.ExecContext(ctx, updateUserStmt, attributes...)
+	var values []interface{}
+	var setAttributes []string
+	for key, value := range attributes {
+		setAttributes = append(setAttributes, fmt.Sprintf("`%s` = ?", key))
+		values = append(values, value)
+	}
+	values = append(values, id)
+	setStatement := fmt.Sprintf("SET %s", strings.Join(setAttributes, ", "))
+
+	query := fmt.Sprintf(updateUserStmt, setStatement)
+	_, err := mr.db.ExecContext(ctx, query, values...)
 	return err
 }
