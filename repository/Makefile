@@ -7,7 +7,7 @@ LDFLAGS += -X "main.Commit=$(COMMIT_HASH_SHORT)"
 
 PKGS ?= $(shell go list ./... | grep -v /vendor/ | grep -v /mocks)
 
-CMD_NAME = $(shell basename `git config --get remote.origin.url` .git | sed 's/de-wkr-//g')
+CMD_NAME = repository_pattern
 
 export GO111MODULE=on
 
@@ -16,17 +16,17 @@ all: build
 
 .PHONY: build
 build:
-	@echo 'Building cloudflare-logs ($(COMMIT_HASH_SHORT))'
-	@go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' ./cmd
+	@echo 'Building repository_pattern ($(COMMIT_HASH_SHORT))'
+	@go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' .
 
 .PHONY: build-linux
 build-linux:
-	@echo 'Building cloudflare-logs ($(COMMIT_HASH_SHORT))'
-	CGO_ENABLED=0 GOOS=linux go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' ./cmd
+	@echo 'Building repository_pattern ($(COMMIT_HASH_SHORT))'
+	CGO_ENABLED=0 GOOS=linux go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' .
 
 .PHONY: build-image
 build-image:
-	@echo 'Building cloudflare-logs Docker image ($(COMMIT_HASH_SHORT))'
+	@echo 'Building repository_pattern Docker image ($(COMMIT_HASH_SHORT))'
 	@docker build -t $(CMD_NAME):$(COMMIT_HASH_SHORT) --build-arg COMMIT=$(COMMIT_HASH_SHORT) --build-arg GITHUB_USER=$(GITHUB_USER) --build-arg GITHUB_TOKEN=$(GITHUB_TOKEN) .
 
 .PHONY: check-all
