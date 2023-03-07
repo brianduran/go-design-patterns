@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
@@ -18,7 +19,7 @@ func Open(config Config) (*sql.DB, error) {
 		ParseTime:            true,
 		AllowNativePasswords: true,
 	}
-
+	fmt.Printf("connection: %v\n", conf.FormatDSN())
 	db, err := sql.Open("mysql", conf.FormatDSN())
 	if err != nil {
 		return nil, errors.New("failed to open MySQL connection")

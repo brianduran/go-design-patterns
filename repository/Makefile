@@ -7,7 +7,7 @@ LDFLAGS += -X "main.Commit=$(COMMIT_HASH_SHORT)"
 
 PKGS ?= $(shell go list ./... | grep -v /vendor/ | grep -v /mocks)
 
-CMD_NAME = repository_pattern
+CMD_NAME = "repository"
 
 export GO111MODULE=on
 
@@ -16,18 +16,23 @@ all: build
 
 .PHONY: build
 build:
-	@echo 'Building repository_pattern ($(COMMIT_HASH_SHORT))'
-	@go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' .
+	@echo 'Building repository ($(COMMIT_HASH_SHORT))'
+	@go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' ./cmd
 
 .PHONY: build-linux
 build-linux:
-	@echo 'Building repository_pattern ($(COMMIT_HASH_SHORT))'
-	CGO_ENABLED=0 GOOS=linux go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' .
+	@echo 'Building repository ($(COMMIT_HASH_SHORT))'
+	CGO_ENABLED=0 GOOS=linux go build -o ./$(CMD_NAME) -ldflags '$(LDFLAGS)' ./cmd
 
 .PHONY: build-image
 build-image:
 	@echo 'Building repository_pattern Docker image ($(COMMIT_HASH_SHORT))'
 	@docker build -t $(CMD_NAME):$(COMMIT_HASH_SHORT) --build-arg COMMIT=$(COMMIT_HASH_SHORT) --build-arg GITHUB_USER=$(GITHUB_USER) --build-arg GITHUB_TOKEN=$(GITHUB_TOKEN) .
+
+.PHONY: up
+up:
+	docker-compose up -d
+
 
 .PHONY: check-all
 check-all: check-style build test

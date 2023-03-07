@@ -1,4 +1,4 @@
-repository/repository_pattern
+repository/repository
 test_coverage_report.html
 tools.coverprofile
 *.coverprofile_part

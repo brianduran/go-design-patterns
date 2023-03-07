@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ltvco/go_design_patterns/dbconn/mysql"
+	"github.com/ltvco/go-design-patterns/dbconn/mysql"
 
 	// required to use go embed feature
 	_ "embed"

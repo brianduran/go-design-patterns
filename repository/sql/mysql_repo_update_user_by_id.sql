@@ -1,3 +1,3 @@
-UPDATE `user`
-SET `name` = ?, `age` = ?
-WHERE `id` = ?
+UPDATE user
+SET name = ?, age = ?
+WHERE id = ?

@@ -1,4 +1,4 @@
-module github.com/ltvco/go_design_patterns
+module github.com/ltvco/go-design-patterns
 
 go 1.18
 

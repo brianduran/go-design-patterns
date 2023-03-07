@@ -1,1 +1,1 @@
-INSERT INTO `user` (`name`, `age`) VALUES (?, ?)
+INSERT INTO user (name, age) VALUES (?, ?)
