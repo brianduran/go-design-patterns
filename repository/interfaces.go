@@ -5,7 +5,7 @@ import "context"
 // IRepository defines the methods handle a user.
 type IRepository interface {
 	CreateUser(ctx context.Context, name string, age int) error
-	DeleteUser(ctx context.Context, id int) error
-	GetUser(ctx context.Context, id int) (*User, error)
-	UpdateUser(ctx context.Context, id int, attributes map[string]interface{}) error
+	DeleteUser(ctx context.Context, name string) error
+	GetUserByName(ctx context.Context, name string) (*User, error)
+	UpdateUser(ctx context.Context, name string, attributes map[string]interface{}) error
 }

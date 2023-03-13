@@ -45,23 +45,26 @@ func processRepoData(ctx context.Context, repo repository.IRepository) error {
 		return fmt.Errorf("failed to create user Joel: %+v", err)
 	}
 
+	logger.Println("===============================================")
 	logger.Println("Obtaining data from Ellie")
-	user, err := repo.GetUser(ctx, 5)
+	user, err := repo.GetUserByName(ctx, "Ellie")
 	if err != nil {
 		return fmt.Errorf("failed to retrieve Ellie's data: %+v", err)
 	}
 	logger.Printf("User name: %v", user.Name)
 	logger.Printf("User age: %v", user.Age)
 
-	logger.Println("Updating Ellie's age")
+	logger.Println("===============================================")
+	logger.Println("Updating Ellie's age...")
 	attributes := map[string]interface{}{"age": 19}
-	err = repo.UpdateUser(ctx, 5, attributes)
+	err = repo.UpdateUser(ctx, "Ellie", attributes)
 	if err != nil {
 		return fmt.Errorf("failed to update Ellie's data: %+v", err)
 	}
 
+	logger.Println("===============================================")
 	logger.Println("Obtaining updated data from Ellie")
-	user, err = repo.GetUser(ctx, 5)
+	user, err = repo.GetUserByName(ctx, "Ellie")
 	if err != nil {
 		return fmt.Errorf("failed to retrieve Ellie's data: %+v", err)
 	}
@@ -69,10 +72,16 @@ func processRepoData(ctx context.Context, repo repository.IRepository) error {
 	logger.Printf("User age: %v", user.Age)
 	logger.Println("Ellie's age was updated!")
 
-	logger.Println("Deleting user Joel")
-	err = repo.DeleteUser(ctx, 6)
+	logger.Println("===============================================")
+	logger.Println("Deleting created users")
+	err = repo.DeleteUser(ctx, "Joel")
 	if err != nil {
 		return fmt.Errorf("failed to delete Joel's data: %+v", err)
+	}
+
+	err = repo.DeleteUser(ctx, "Ellie")
+	if err != nil {
+		return fmt.Errorf("failed to delete Ellie's data: %+v", err)
 	}
 
 	return nil

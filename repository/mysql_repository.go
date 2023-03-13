@@ -19,7 +19,7 @@ var (
 	//go:embed sql/mysql_repo_insert_user.sql
 	insertUserStmt string
 
-	//go:embed sql/mysql_repo_select_user_by_id.sql
+	//go:embed sql/mysql_repo_select_user_by_name.sql
 	selectUserStmt string
 
 	//go:embed sql/mysql_repo_update_user_by_id.sql
@@ -38,6 +38,10 @@ func NewMysqlRepository(config mysql.Config) (*MysqlRepository, error) {
 		return nil, err
 	}
 
+	// defer the close till after the main function has finished
+	// executing
+	//defer db.Close() TODO: add close
+
 	return &MysqlRepository{
 		db: db,
 	}, nil
@@ -50,14 +54,19 @@ func (mr *MysqlRepository) CreateUser(ctx context.Context, name string, age int)
 }
 
 // DeleteUser executes the SQL statement to delete a user.
-func (mr *MysqlRepository) DeleteUser(ctx context.Context, id int) error {
-	_, err := mr.db.ExecContext(ctx, deleteUserStmt, id)
+func (mr *MysqlRepository) DeleteUser(ctx context.Context, name string) error {
+	user, err := mr.GetUserByName(ctx, name)
+	if err != nil {
+		return fmt.Errorf("failed to retrieve user's data: %+v", err)
+	}
+
+	_, err = mr.db.ExecContext(ctx, deleteUserStmt, user.ID)
 	return err
 }
 
-// GetUser executes the SQL statement to retrieve a user's data.
-func (mr *MysqlRepository) GetUser(ctx context.Context, id int) (*User, error) {
-	row, err := mr.db.QueryContext(ctx, selectUserStmt, id)
+// GetUserByName executes the SQL statement to retrieve a user's data.
+func (mr *MysqlRepository) GetUserByName(ctx context.Context, name string) (*User, error) {
+	row, err := mr.db.QueryContext(ctx, selectUserStmt, name)
 	if err != nil {
 		return nil, err
 	}
@@ -76,19 +85,26 @@ func (mr *MysqlRepository) GetUser(ctx context.Context, id int) (*User, error) {
 // UpdateUser executes the SQL statement to update a user.
 func (mr *MysqlRepository) UpdateUser(
 	ctx context.Context,
-	id int,
+	name string,
 	attributes map[string]interface{},
 ) error {
 	var values []interface{}
 	var setAttributes []string
+
+	user, err := mr.GetUserByName(ctx, name)
+	if err != nil {
+		return fmt.Errorf("failed to retrieve user's data: %+v", err)
+	}
+
 	for key, value := range attributes {
-		setAttributes = append(setAttributes, fmt.Sprintf("`%s` = ?", key))
+		setAttributes = append(setAttributes, fmt.Sprintf("%s = ?", key))
 		values = append(values, value)
 	}
-	values = append(values, id)
+
 	setStatement := fmt.Sprintf("SET %s", strings.Join(setAttributes, ", "))
+	values = append(values, user.ID)
 
 	query := fmt.Sprintf(updateUserStmt, setStatement)
-	_, err := mr.db.ExecContext(ctx, query, values...)
+	_, err = mr.db.ExecContext(ctx, query, values...)
 	return err
 }

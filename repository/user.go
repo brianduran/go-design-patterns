@@ -6,10 +6,11 @@ import (
 	"github.com/ltvco/data-eng-go-lib/sqlutil"
 )
 
-// User contains the relevant data to handle an user.
+// User contains the relevant data to handle a user.
 type User struct {
-	Age  int
-	Name string
+	Age  int    `sql:"age"`
+	ID   int    `sql:"id"`
+	Name string `sql:"name"`
 }
 
 // Scan maps the SQL results into the particular User object.
