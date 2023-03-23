@@ -3,10 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/ltvco/go-design-patterns/repository"
 	"log"
 	"os"
-
-	"github.com/ltvco/go-design-patterns/repository"
 )
 
 var (
@@ -18,24 +17,44 @@ var (
 )
 
 func main() {
-	mysqlRepo, err := repository.NewMysqlRepository(conf.MysqlDB)
-	if err != nil {
-		logger.Printf("ERROR: %+v", err)
-		return
-	}
 	ctx := context.Background()
 
-	logger.Println("Processing data with MySQL")
-	err = processRepoData(ctx, mysqlRepo)
+	//mysqlRepo, err := repository.NewMysqlRepository(conf.MysqlDB)
+	//if err != nil {
+	//	logger.Printf("ERROR: %+v", err)
+	//	return
+	//}
+
+	//logger.Println("Processing data with MySQL")
+	//err = processRepoData(ctx, mysqlRepo)
+	//if err != nil {
+	//	logger.Printf("ERROR: %+v", err)
+	//}
+
+	csvRepo, err := repository.NewCSVRepository()
+
+	logger.Println("Processing data with CSV")
+	err = processRepoData(ctx, csvRepo)
 	if err != nil {
 		logger.Printf("ERROR: %+v", err)
 	}
-
 }
 
 func processRepoData(ctx context.Context, repo repository.IRepository) error {
+	logger.Println("===============================================")
+	logger.Println("Deleting previous execution data")
+	err := repo.DeleteUser(ctx, "Name", "Joel")
+	if err != nil {
+		return fmt.Errorf("failed to delete Joel's data: %+v", err)
+	}
+
+	err = repo.DeleteUser(ctx, "Name", "Ellie")
+	if err != nil {
+		return fmt.Errorf("failed to delete Ellie's data: %+v", err)
+	}
+
 	logger.Println("Creating a couple of new users called Ellie and Joel")
-	err := repo.CreateUser(ctx, "Ellie", 18)
+	err = repo.CreateUser(ctx, "Ellie", 18)
 	if err != nil {
 		return fmt.Errorf("failed to create user Ellie: %+v", err)
 	}
@@ -71,18 +90,6 @@ func processRepoData(ctx context.Context, repo repository.IRepository) error {
 	logger.Printf("User name: %v", user.Name)
 	logger.Printf("User age: %v", user.Age)
 	logger.Println("Ellie's age was updated!")
-
-	logger.Println("===============================================")
-	logger.Println("Deleting created users")
-	err = repo.DeleteUser(ctx, "Joel")
-	if err != nil {
-		return fmt.Errorf("failed to delete Joel's data: %+v", err)
-	}
-
-	err = repo.DeleteUser(ctx, "Ellie")
-	if err != nil {
-		return fmt.Errorf("failed to delete Ellie's data: %+v", err)
-	}
 
 	return nil
 }
