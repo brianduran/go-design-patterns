@@ -53,8 +53,8 @@ func (mr *MysqlRepository) CreateUser(ctx context.Context, name string, age int)
 	return err
 }
 
-// DeleteUser executes the SQL statement to delete a user.
-func (mr *MysqlRepository) DeleteUser(ctx context.Context, name string) error {
+// DeleteUserByName executes the SQL statement to delete the first user that matches a specific name.
+func (mr *MysqlRepository) DeleteUserByName(ctx context.Context, name string) error {
 	user, err := mr.GetUserByName(ctx, name)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve user's data: %+v", err)

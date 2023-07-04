@@ -93,8 +93,8 @@ func (cr *CSVRepository) CreateUser(ctx context.Context, name string, age int) e
 	return nil
 }
 
-// DeleteUser executes the SQL statement to delete a user.
-func (cr *CSVRepository) DeleteUser(ctx context.Context, column string, columnValue string) error {
+// DeleteUserByName deletes the first user that matches a specific name.
+func (cr *CSVRepository) DeleteUserByName(ctx context.Context, name string) error {
 	_, err := cr.f.Seek(0, io.SeekStart)
 	if err != nil {
 		return errors.New(fmt.Sprintf("failed to seek the start of the file: %s", err))
@@ -108,9 +108,9 @@ func (cr *CSVRepository) DeleteUser(ctx context.Context, column string, columnVa
 	records := fileData[1:]
 
 	for i, header := range headers {
-		if header == column {
+		if header == "name" {
 			for j, record := range records {
-				if record[i] == columnValue {
+				if record[i] == name {
 					records = append(records[:j], records[j+1:]...)
 					fileData = append([][]string{headers}, records...)
 					err = cr.writeData(fileData)

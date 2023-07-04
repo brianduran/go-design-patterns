@@ -19,17 +19,17 @@ var (
 func main() {
 	ctx := context.Background()
 
-	//mysqlRepo, err := repository.NewMysqlRepository(conf.MysqlDB)
-	//if err != nil {
-	//	logger.Printf("ERROR: %+v", err)
-	//	return
-	//}
+	mysqlRepo, err := repository.NewMysqlRepository(conf.MysqlDB)
+	if err != nil {
+		logger.Printf("ERROR: %+v", err)
+		return
+	}
 
-	//logger.Println("Processing data with MySQL")
-	//err = processRepoData(ctx, mysqlRepo)
-	//if err != nil {
-	//	logger.Printf("ERROR: %+v", err)
-	//}
+	logger.Println("Processing data with MySQL")
+	err = processRepoData(ctx, mysqlRepo)
+	if err != nil {
+		logger.Printf("ERROR: %+v", err)
+	}
 
 	csvRepo, err := repository.NewCSVRepository()
 
@@ -43,12 +43,12 @@ func main() {
 func processRepoData(ctx context.Context, repo repository.IRepository) error {
 	logger.Println("===============================================")
 	logger.Println("Deleting previous execution data")
-	err := repo.DeleteUser(ctx, "Name", "Joel")
+	err := repo.DeleteUserByName(ctx, "Joel")
 	if err != nil {
 		return fmt.Errorf("failed to delete Joel's data: %+v", err)
 	}
 
-	err = repo.DeleteUser(ctx, "Name", "Ellie")
+	err = repo.DeleteUserByName(ctx, "Ellie")
 	if err != nil {
 		return fmt.Errorf("failed to delete Ellie's data: %+v", err)
 	}
