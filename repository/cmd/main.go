@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ltvco/go-design-patterns/repository"
 	"log"
 	"os"
+	"strings"
+
+	"github.com/ltvco/go-design-patterns/repository"
 )
 
 var (
@@ -44,12 +46,12 @@ func processRepoData(ctx context.Context, repo repository.IRepository) error {
 	logger.Println("===============================================")
 	logger.Println("Deleting previous execution data")
 	err := repo.DeleteUserByName(ctx, "Joel")
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), repository.ErrUserNotFound) {
 		return fmt.Errorf("failed to delete Joel's data: %+v", err)
 	}
 
 	err = repo.DeleteUserByName(ctx, "Ellie")
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), repository.ErrUserNotFound) {
 		return fmt.Errorf("failed to delete Ellie's data: %+v", err)
 	}
 

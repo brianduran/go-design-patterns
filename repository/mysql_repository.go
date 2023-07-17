@@ -59,7 +59,6 @@ func (mr *MysqlRepository) DeleteUserByName(ctx context.Context, name string) er
 	if err != nil {
 		return fmt.Errorf("failed to retrieve user's data: %+v", err)
 	}
-
 	_, err = mr.db.ExecContext(ctx, deleteUserStmt, user.ID)
 	return err
 }
@@ -70,16 +69,16 @@ func (mr *MysqlRepository) GetUserByName(ctx context.Context, name string) (*Use
 	if err != nil {
 		return nil, err
 	}
+	if row.Next() {
+		user := new(User)
+		err = user.Scan(row)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan user's data: %+v", err)
+		}
 
-	row.Next()
-	user := new(User)
-
-	err = user.Scan(row)
-	if err != nil {
-		return nil, err
+		return user, nil
 	}
-
-	return user, nil
+	return nil, fmt.Errorf(ErrUserNotFound)
 }
 
 // UpdateUser executes the SQL statement to update a user.
