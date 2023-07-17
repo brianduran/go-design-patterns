@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
-	"github.com/pkg/errors"
 	"io"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 const fileName = "app_user.csv"
@@ -106,9 +107,8 @@ func (cr *CSVRepository) DeleteUserByName(ctx context.Context, name string) erro
 	}
 	headers := fileData[0]
 	records := fileData[1:]
-
 	for i, header := range headers {
-		if header == "name" {
+		if strings.ToLower(header) == "name" {
 			for j, record := range records {
 				if record[i] == name {
 					records = append(records[:j], records[j+1:]...)
